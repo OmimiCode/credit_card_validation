@@ -1,9 +1,13 @@
 package CreditCardNumberValidation;
 
+import java.security.SecureRandom;
 
 public class CreditCard {
-    public boolean isValid(long creditCardNumber) {
-        if (isValidLength(creditCardNumber) && isValidFirstDigit(creditCardNumber)){
+    private static final int divisor = 10;
+    private String cardType = "";
+
+    public static boolean isValid(long creditCardNumber) {
+        if (isValidLength(creditCardNumber) && isValidFirstDigit(creditCardNumber)) {
             return true;
         } else {
             String e = """
@@ -16,14 +20,13 @@ public class CreditCard {
         }
     }
 
-    private boolean isValidLength(long creditCardNumber) {
+    private static boolean isValidLength(long creditCardNumber) {
         String creditCardNumberAsStrings = Long.toString(creditCardNumber);
         return (creditCardNumberAsStrings.length() >= 13) &&
                 (creditCardNumberAsStrings.length() <= 16);
     }
 
-
-    private boolean isValidFirstDigit(long creditCardNumber) {
+    private static boolean isValidFirstDigit(long creditCardNumber) {
         String creditCardNumberAsStrings = Long.toString(creditCardNumber);
         return creditCardNumberAsStrings.charAt(0) == '4'
                 || creditCardNumberAsStrings.charAt(0) == '5'
@@ -32,14 +35,14 @@ public class CreditCard {
                 && creditCardNumberAsStrings.charAt(1) == '7';
     }
 
-    public int sumOfDoubleEvenPlace(long creditCardNumber) {
+    public static int sumOfDoubleEvenPlace(long creditCardNumber) {
         int sumOfDoubledEvenPlace = 0;
         int counterLimit = Long.toString(creditCardNumber).length();
         sumOfDoubledEvenPlace = loopThroughCreditCardNumberForSumOfEvenPlaceDigits(creditCardNumber, sumOfDoubledEvenPlace, counterLimit);
         return sumOfDoubledEvenPlace;
     }
 
-    private int loopThroughCreditCardNumberForSumOfEvenPlaceDigits(long creditCardNumber, int sumOfDoubledEvenPlace, int counterLimit) {
+    private static int loopThroughCreditCardNumberForSumOfEvenPlaceDigits(long creditCardNumber, int sumOfDoubledEvenPlace, int counterLimit) {
         for (int counter = 1; counter <= counterLimit; counter++) {
             int lastDigit = getLastDigit(creditCardNumber);
             sumOfDoubledEvenPlace = ifNumberIsAtEvenPlace(sumOfDoubledEvenPlace, counter, lastDigit);
@@ -48,16 +51,16 @@ public class CreditCard {
         return sumOfDoubledEvenPlace;
     }
 
-    private int getLastDigit(long creditCardNumber) {
-        return (int) (creditCardNumber % 10);
+    private static int getLastDigit(long creditCardNumber) {
+        return (int) (creditCardNumber % divisor);
     }
 
-    private long truncateLastDigit(long creditCardNumber) {
-        creditCardNumber /= 10;
+    private static long truncateLastDigit(long creditCardNumber) {
+        creditCardNumber /= divisor;
         return creditCardNumber;
     }
 
-    private int ifNumberIsAtEvenPlace(int sumOfDoubledEvenPlace, int counter, int lastDigit) {
+    private static int ifNumberIsAtEvenPlace(int sumOfDoubledEvenPlace, int counter, int lastDigit) {
         if (counter % 2 == 0) {
             lastDigit *= 2;
             sumOfDoubledEvenPlace = ifDoubledLastDigitIsTwoDigitForEvenPlaces(sumOfDoubledEvenPlace, lastDigit);
@@ -65,8 +68,8 @@ public class CreditCard {
         return sumOfDoubledEvenPlace;
     }
 
-    private int ifDoubledLastDigitIsTwoDigitForEvenPlaces(int sumOfDoubledEvenPlace, int lastDigit) {
-        if (lastDigit >= 10) {
+    private static int ifDoubledLastDigitIsTwoDigitForEvenPlaces(int sumOfDoubledEvenPlace, int lastDigit) {
+        if (lastDigit >= divisor) {
             sumOfDoubledEvenPlace += lastDigit - 9;
         } else {
             sumOfDoubledEvenPlace += lastDigit;
@@ -90,23 +93,47 @@ public class CreditCard {
         return sumOfOddPlace;
     }
 
-    private int ifNumberIsAtOddPlace(int sumOfOddPlace, int counter, int lastDigit) {
+    private static int ifNumberIsAtOddPlace(int sumOfOddPlace, int counter, int lastDigit) {
         if (counter % 2 != 0) {
             sumOfOddPlace += lastDigit;
         }
         return sumOfOddPlace;
     }
 
-    public int addSumOfDoubledEvenPlaceAndSumOfOddPlace(int sumOfDoubledEvenPlace, int sumOfOddPlace) {
+    public static int addSumOfDoubledEvenPlaceAndSumOfOddPlace(int sumOfDoubledEvenPlace, int sumOfOddPlace) {
         return sumOfDoubledEvenPlace + sumOfOddPlace;
     }
 
-
     public boolean isValidationVerificationChecker(Long creditCardNumber) {
         isValid(creditCardNumber);
-        return (sumOfDoubleEvenPlace(creditCardNumber) + sumOfOddPlace(creditCardNumber)) % 10 == 0;
+        return (sumOfDoubleEvenPlace(creditCardNumber) + sumOfOddPlace(creditCardNumber)) % divisor == 0;
     }
 
+    public String returnCardType(long creditCardNumber) {
+        isValid(creditCardNumber);
+        isValidationVerificationChecker(creditCardNumber);
+        firstDigitAssertion(creditCardNumber);
+        return cardType;
+    }
+
+    private void firstDigitAssertion(long creditCardNumber) {
+        if (Long.toString(creditCardNumber).charAt(0) == '4') {
+           this.cardType= "visa card";
+        } else if (Long.toString(creditCardNumber).charAt(0) == '5') {
+            this.cardType="master card";
+        } else if (Long.toString(creditCardNumber).charAt(0) == '6') {
+            this.cardType = "discover card";
+        } else if (Long.toString(creditCardNumber).charAt(0) == '3'
+                && Long.toString(creditCardNumber).charAt(1) == '7') {
+            this.cardType = "american express card";
+        }
+    }
+
+//    public Long generateCreditCardNumber() {
+//        SecureRandom secureRandom = new SecureRandom();
+//        Long cardNumber = 999999999999999L + secureRandom.nextLong(9999999999999999L)
+//
+//    }
 }
 
 
